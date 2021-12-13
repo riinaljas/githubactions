@@ -1,0 +1,29 @@
+on:
+  push:
+     branches:
+       - master
+       
+           
+jobs:
+  blogdown: 
+    name: Render-blog
+    runs-on: windows-latest
+    container: docker://dvorg/cml:latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: r-lib/actions/setup-r@master
+
+      - name: Setup R dependencies
+        run: |
+          R -e 'install.packages("tidyverse")'
+          R -e 'install.packages("rvest")'
+          R -e 'install.packages("magrittr")'
+          R -e 'install.packages("gsheet")'
+          R -e 'install.packages("googlesheets4")'
+          R -e 'install.packages("RSelenium")'
+      - name: Run the script 
+        env: 
+          repo_token: ${{secrets.GITHUB_TOKEN }}
+          run: |
+            Rscript tallinnauhingute_scraper.R
